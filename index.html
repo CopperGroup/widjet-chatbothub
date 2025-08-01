@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Widget</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div id="chatbot-widget">
+        <div id="chat-button">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        
+        <div id="chat-window">
+            <div id="chat-header">
+                <button id="back-to-chats">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <button id="back-to-articles">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <div class="header-content">
+                    <h3 id="header-title"></h3>
+                    <p id="header-subtitle"></p>
+                </div>
+                <button id="close-chat">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="tabs-content">
+                <div class="tab-panel active" role="tabpanel" aria-labelledby="home-tab" id="home-panel">
+                    <div id="home-content" class="home-scrollbar">
+                        <div class="home-header" id="home-header">
+                            <div class="home-header-right">
+                                <div class="staff-pfp" id="staff-pfp">
+                                </div>
+                                <button id="close-chat" class="close-chat-home">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <h1 id="home-heading"></h1>
+                        <!-- <h2>How can we help you today?</h2> -->
+                        <div class="home-quick-actions" id="home-quick-actions">
+                            <!-- <button id="cbh-deep-link" aria-label="messages->*cbhdeeplink^&^cbhdeeplink*->conversations->*cbhdeeplink^&^cbhdeeplink*->null">
+                                <span>Send us a message</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" height="16" width="16">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
+                                </svg>
+                            </button>
+                            <button id="cbh-deep-link" aria-label="https://example.com/somepage->*cbhdeeplink^&^cbhdeeplink*->new">
+                                <span>Leave us feedback</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" height="16" width="16">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                                </svg>
+                            </button> -->
+                        </div>
+                        
+                        <div class="help-section" id="home-help-section">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-panel" role="tabpanel" aria-labelledby="messages-tab" id="messages-panel">
+                    <div id="chatbot-content">
+                        <div id="email-input-area" class="chatbot-scrollbar">
+                            <div class="email-icon-container">
+                                <svg width="44" height="44" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="white" stroke-width="2"/>
+                                    <polyline points="22,6 12,13 2,6" stroke="white" stroke-width="2"/>
+                                </svg>
+                            </div>
+                            <h3>Start a Conversation</h3>
+                            <p>Enter your email to begin chatting with our support team</p>
+                            <input id="emailInput" type="email" placeholder="Enter your email address"/>
+                            <button id="emailSubmitBtn">Start Chat</button>
+                        </div>
+                        
+                        <div id="chat-list" class="chatbot-scrollbar">
+
+                        </div>
+                        
+                        <div id="messages-container" class="chatbot-scrollbar">
+                            <div class="typing-indicator-bubble" id="typing-indicator-bubble">
+                                <div class="message-content">
+                                    <div class="typing-label">Support is typing...</div>
+                                    <div class="typing-dots">
+                                        <span></span><span></span><span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="new-chat-button-container">
+                            <div id="new-chat-button-inner-container">
+                                <button id="newChatBtn">Start New Chat</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-panel" role="tabpanel" aria-labelledby="help-tab" id="help-panel">
+                    <div class="help-content">
+                        <div class="article-container" id="articles">
+                            <div class="article-search">
+                                <div class="article-search-container">
+                                    <input type="text" placeholder="Search for help" id="search-article"/>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="search-icon" height="16" width="16">
+                                        <path d="M15.0349 2.75L16.4378 2.75L16.695 3.44512C17.056 4.4208 17.1712 4.68588 17.3608 4.87551C17.5504 5.06514 17.8155 5.18028 18.7912 5.54132L19.4863 5.79853L19.4863 7.20147L18.7912 7.45869C17.8155 7.81972 17.5504 7.93486 17.3608 8.12449C17.1712 8.31412 17.056 8.57921 16.695 9.55488L16.4378 10.25L15.0349 10.25L14.7776 9.55488C14.4166 8.57921 14.3015 8.31412 14.1118 8.12449C13.9222 7.93486 13.6571 7.81972 12.6814 7.45868L11.9863 7.20147L11.9863 5.79853L12.6814 5.54132C13.6571 5.18028 13.9222 5.06514 14.1118 4.87551C14.3015 4.68588 14.4166 4.42079 14.7776 3.44512L15.0349 2.75Z" fill="currentColor"></path>
+                                        <path d="M3.25 11.3528C3.25 7.15391 6.65391 3.75 10.8528 3.75V5.65071C7.70364 5.65071 5.15071 8.20364 5.15071 11.3528C5.15071 14.5021 7.70364 17.055 10.8528 17.055C14.0021 17.055 16.555 14.5021 16.555 11.3528H18.4557C18.4557 13.1098 17.8597 14.7275 16.859 16.015L20.75 19.906L19.406 21.25L15.515 17.359C14.2275 18.3597 12.6098 18.9557 10.8528 18.9557C6.65391 18.9557 3.25 15.5518 3.25 11.3528Z" fill="currentColor"></path>
+                                    </svg>            
+                                </div>
+                            </div>
+                            <div class="article-scrollable-container home-scrollbar">
+                            </div>
+                        </div>
+                        <div id="article-content-container" class="home-scrollbar"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="chatbot-input-area">
+                <div id="input-field-container">
+                    <textarea id="msg" placeholder="Type your message..." rows="1" cols="5" class="invisible-scrollbar"></textarea>
+                    <button id="sendBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                    <div id="file-input-container" class="active">
+                        <input id="file-input" type="file" style="display: none;" />
+                        <label for="file-input" id="file-input-label">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="16" height="16">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13" />
+                            </svg>
+                        </label>
+                    </div>
+                </div>
+                <div id="input-status-message"></div>
+            </div>
+            
+            <div id="footer">
+                <div id="tabs-footer" role="tablist">
+                </div>
+                <div id="branding"><a href="https://www.chatboth.com" target="_blank">ChatBot Hub</a></div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="index.js"></script>
+</body>
+</html>
