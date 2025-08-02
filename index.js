@@ -1189,7 +1189,7 @@
           tabButton.role = "tab";
           tabButton.ariaControls = tab.ariaControls;
           tabButton.classList.add('tab-button');
-          if(tab.title === "Home") {
+          if(tab.id.includes("home")) {
             tabButton.classList.add('active');
             tabButton.ariaSelected = "true";
           } else {
