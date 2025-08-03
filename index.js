@@ -122,7 +122,7 @@
                         showView('articles', 'right');
                     }
                 }
-            }, 0); // Small delay for tab switch animation to complete
+            }, 500); // Small delay for tab switch animation to complete
         }, 0); // Delay for widget opening animation to complete
     }
 
@@ -813,6 +813,98 @@
     /**
      * Handles the click event for the main chat button to toggle the widget.
      */
+
+    function applyGlassEffect(element, color1, color2, theme = "light") {
+        if (!element) return;
+      
+        const rgba = (hex, alpha) => {
+          const bigint = parseInt(hex.replace("#", ""), 16);
+          const r = (bigint >> 16) & 255;
+          const g = (bigint >> 8) & 255;
+          const b = bigint & 255;
+          return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        };
+      
+        const styles = {
+          light: {
+            background: `linear-gradient(135deg, ${rgba(color1, 0.35)} 0%, ${rgba(color2, 0.45)} 50%, ${rgba(color2, 0.4)} 100%)`,
+            border: `1px solid ${rgba(color1, 0.3)}`,
+            boxShadow: `0 4px 12px ${rgba(color1, 0.15)}, 0 2px 4px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.2)`,
+            overlay: `linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%, ${rgba(color1, 0.1)} 100%)`,
+            hover: {
+              background: `linear-gradient(135deg, ${rgba(color1, 0.25)} 0%, ${rgba(color2, 0.35)} 50%, ${rgba(color2, 0.3)} 100%)`,
+              borderColor: rgba(color1, 0.5),
+              boxShadow: `0 8px 24px ${rgba(color1, 0.25)}, 0 4px 8px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.3)`,
+              transform: 'translateY(-2px)'
+            }
+          },
+          dark: {
+            // Increased opacity values
+            background: `linear-gradient(135deg, ${rgba(color1, 0.25)} 0%, ${rgba(color2, 0.35)} 50%, ${rgba(color2, 0.25)} 100%)`,
+            border: `1px solid ${rgba(color1, 0.3)}`,
+            boxShadow: `0 4px 12px ${rgba(color1, 0.2)}, 0 2px 4px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)`,
+            overlay: `linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 50%, ${rgba(color1, 0.05)} 100%)`,
+            hover: {
+              background: `linear-gradient(135deg, ${rgba(color1, 0.3)} 0%, ${rgba(color2, 0.4)} 50%, ${rgba(color2, 0.3)} 100%)`,
+              borderColor: rgba(color1, 0.5),
+              boxShadow: `0 8px 24px ${rgba(color1, 0.3)}, 0 4px 8px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08)`,
+              transform: 'none'
+            }
+          }
+        };
+      
+        const style = styles[theme];
+      
+        // Base styles
+        Object.assign(element.style, {
+          background: style.background,
+          backdropFilter: 'blur(24px)',
+          border: style.border,
+          boxShadow: style.boxShadow,
+          borderRadius: '1rem',
+          color: 'white',
+          overflow: 'hidden',
+          position: 'relative',
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+        });
+      
+        // Add or update overlay div
+        let overlay = element.querySelector('.glass-effect-before');
+        if (!overlay) {
+          overlay = document.createElement('div');
+          overlay.className = 'glass-effect-before';
+          Object.assign(overlay.style, {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            borderRadius: 'inherit',
+            pointerEvents: 'none',
+            zIndex: 0
+          });
+          element.appendChild(overlay);
+        }
+        overlay.style.background = style.overlay;
+      
+        // Hover events
+        element.addEventListener('mouseenter', () => {
+          element.style.background = style.hover.background;
+          element.style.borderColor = style.hover.borderColor;
+          element.style.boxShadow = style.hover.boxShadow;
+          element.style.transform = style.hover.transform;
+        });
+      
+        element.addEventListener('mouseleave', () => {
+          element.style.background = style.background;
+          element.style.borderColor = style.border.replace('1px solid ', '');
+          element.style.boxShadow = style.boxShadow;
+          element.style.transform = 'none';
+        });
+      }
+      
+
     const handleToggleWidget = () => {
         if (!elements.chatWindow || !elements.chatButton) return;
 
@@ -1274,6 +1366,7 @@
                 actionButton.appendChild(textSpan);
                 actionButton.insertAdjacentHTML('beforeend', action.icon);
 
+                applyGlassEffect(actionButton, config.gradient1, config.gradient2, config.theme)
                 elements.homeQuickActions.appendChild(actionButton)
             })
         }

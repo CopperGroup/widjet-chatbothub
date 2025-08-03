@@ -110,14 +110,14 @@
   box-shadow: 0 6px 16px rgba(16, 185, 129, 0.1), 0 3px 6px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
-[data-theme="dark"] .home-quick-actions > button {
+/* [data-theme="dark"] .home-quick-actions > button {
   background: linear-gradient(
     135deg,
-    rgba(16, 185, 129, 0.1) 0%, /* Less blue/green tint */
+    rgba(16, 185, 129, 0.1) 0%, 
     rgba(5, 150, 105, 0.15) 50%,
     rgba(4, 120, 87, 0.1) 100%
   );
-  border: 1px solid rgba(16, 185, 129, 0.1); /* Less blue/green tint */
+  border: 1px solid rgba(16, 185, 129, 0.1); 
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.05), 0 2px 4px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
@@ -136,13 +136,13 @@
 [data-theme="dark"] .home-quick-actions > button:hover {
   background: linear-gradient(
     135deg,
-    rgba(16, 185, 129, 0.08) 0%, /* Less blue/green tint */
+    rgba(16, 185, 129, 0.08) 0%, 
     rgba(5, 150, 105, 0.12) 50%,
     rgba(4, 120, 87, 0.08) 100%
   );
-  border-color: rgba(16, 185, 129, 0.2); /* Less blue/green tint */
+  border-color: rgba(16, 185, 129, 0.2); 
   box-shadow: 0 8px 24px rgba(16, 185, 129, 0.1), 0 4px 8px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-}
+} */
 
 [data-theme="dark"] .help-section {
   background: rgba(0, 0, 0, 0.4); /* Darker, less blue */
@@ -617,14 +617,7 @@
   }
   
   .home-quick-actions > button {
-    background: linear-gradient(
-      135deg,
-      rgba(16, 185, 129, 0.35) 0%,
-      rgba(5, 150, 105, 0.45) 50%,
-      rgba(4, 120, 87, 0.4) 100%
-    );
     backdrop-filter: blur(24px);
-    border: 1px solid rgba(16, 185, 129, 0.3);
     color: white;
     display: flex;
     font-size: 16px;
@@ -637,7 +630,6 @@
     justify-content: space-between;
     border-radius: 1rem;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15), 0 2px 4px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.2);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
@@ -650,26 +642,14 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%, rgba(16, 185, 129, 0.1) 100%);
     border-radius: inherit;
     pointer-events: none;
   }
   
   .home-quick-actions > button:hover {
     transform: translateY(-2px);
-    background: linear-gradient(
-      135deg,
-      rgba(16, 185, 129, 0.25) 0%,
-      rgba(5, 150, 105, 0.35) 50%,
-      rgba(4, 120, 87, 0.3) 100%
-    );
-    border-color: rgba(16, 185, 129, 0.5);
-    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.25), 0 4px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.3);
   }
   
-  .home-quick-actions > button svg {
-    filter: drop-shadow(0 1px 2px rgba(16, 185, 129, 0.3));
-  }
   
   /* Help Section */
   .help-section {
