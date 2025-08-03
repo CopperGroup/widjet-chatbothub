@@ -219,7 +219,7 @@
      * @param {boolean} isReplySent - True if a reply has already been sent for this message's options.
      * @returns {HTMLElement} The message bubble element.
      */
-    const createMessageBubble = (sender, text, timestamp, options = [], isReplySent = false) => {
+    const createMessageBubble = (sender, text, timestamp, options = [], isReplySent = false, fileUrl) => {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message-bubble ${sender}`;
 
@@ -271,12 +271,13 @@
 
         messageContent.innerHTML += `
             <div class="sender-label">${senderLabel}</div>
+            ${fileUrl ? `<img src="${fileUrl}" style="max-width: 280px;"/>` : ""}
             <div class="message-text">${markdownToHtml}</div>
             <div class="timestamp">
                 ${new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </div>
         `;
-
+        
         messageDiv.appendChild(messageContent);
 
         // Add options as clickable buttons if they exist
@@ -335,9 +336,9 @@
      * @param {Array<string>} options - Array of quick reply options.
      * @param {boolean} isReplySent - True if a reply has already been sent for this message's options.
      */
-    const renderMessage = (sender, text, timestamp, options = [], isReplySent = false) => {
+    const renderMessage = (sender, text, timestamp, options = [], isReplySent = false, fileUrl) => {
         if (!elements.messagesContainer) return; // Defensive check
-        const messageBubble = createMessageBubble(sender, text, timestamp, options, isReplySent);
+        const messageBubble = createMessageBubble(sender, text, timestamp, options, isReplySent, fileUrl);
         elements.messagesContainer.appendChild(messageBubble);
         setTimeout(() => {
             elements.messagesContainer.scrollTop = elements.messagesContainer.scrollHeight;
@@ -518,11 +519,15 @@
             elements.fileInputContainer.style.display = 'flex';
             elements.sendBtn.style.display = 'block';
             elements.inputStatusMessage.style.display = 'none';
+            elements.msgInput.style.display = 'block';
+            elements.msgInput.style.opacity = '1';
             state.isInputVisible = true;
         } else {
             elements.fileInputContainer.style.display = 'none';
             elements.sendBtn.style.display = 'none';
             elements.inputStatusMessage.style.display = 'block';
+            elements.msgInput.style.display = 'none';
+            elements.msgInput.style.opacity = '0';
             state.isInputVisible = false;
         }
         elements.inputArea.style.display = 'block';
@@ -619,7 +624,7 @@
                 } else {
                     lastBotMessageWithOptionsPresent = false;
                 }
-                renderMessage(msg.sender, msg.text, msg.timestamp, msg.options, isReplySentForThisOptionsBlock);
+                renderMessage(msg.sender, msg.text, msg.timestamp, msg.options, isReplySentForThisOptionsBlock, msg.fileUrl);
             });
 
             hideTypingIndicator();
@@ -712,14 +717,6 @@
             }
         }
     };
-
-    // --- Widget Visibility Logic (Path-based) ---
-
-    // ### ATENTION COMMENTED OUT AS THE LOGIC WAS MOVED TO IFRAME
-    /**
-     * Checks the current URL path against allowed/disallowed lists and toggles widget visibility.
-     */
-    // function checkAndToggleWidgetVisibility() {
     //     if (!config || !elements.chatbotWidget) return;
 
     //     const currentPathname = window.location.pathname;
@@ -963,8 +960,7 @@
             elements.messagesContainer.innerHTML = ''; // Clear messages
         }
 
-        updateInputAreaVisibility(true); // Ensure input is visible when returning to chat list
-
+        updateInputAreaVisibility(true); // Ensure input is visible when returning to chat li
         if (!state.userEmail) {
             showView('email');
         } else {
@@ -1030,13 +1026,12 @@
         try {
             elements.messagesContainer.innerHTML = ''; // Clear messages for a new chat
             showView('chat', 'right');
-            updateInputAreaVisibility(true);
+            updateInputAreaVisibility(true)
 
             // Fetch current country data for new chat
             // Ensure this API call is allowed by your Content Security Policy if applicable
             const countryRes = await fetch('https://ipwho.is/');
             const data = await countryRes.json();
-            console.log(data); // Log country data for debugging
             socket.emit("create_new_chat", {
                 chatbotCode: config.chatbotCode,
                 email: state.userEmail,
@@ -1054,44 +1049,86 @@
      */
     const handleSendMessage = async () => {
         if (!elements.msgInput || !state.currentChatId || !config || !socket) {
-            return;
+          return;
         }
-
+    
         const msg = elements.msgInput.value.trim();
         if (!msg) {
-            return;
+          return;
         }
-
+    
+        const files = elements.fileInput.files;
+    
         // Disable all option buttons on all message bubbles when a new message is sent
-        const allMessageBubbles = elements.messagesContainer.querySelectorAll('.message-bubble');
-        allMessageBubbles.forEach(bubble => {
-            const optionButtons = bubble.querySelectorAll('.option-button');
-            optionButtons.forEach(button => {
-                button.disabled = true;
-                button.style.opacity = '0.6';
-                button.style.cursor = 'default';
-                button.onmouseenter = null;
-                button.onmouseleave = null;
-            });
+        const allMessageBubbles =
+          elements.messagesContainer.querySelectorAll(".message-bubble");
+        allMessageBubbles.forEach((bubble) => {
+          const optionButtons = bubble.querySelectorAll(".option-button");
+          optionButtons.forEach((button) => {
+            button.disabled = true;
+            button.style.opacity = "0.6";
+            button.style.cursor = "default";
+            button.onmouseenter = null;
+            button.onmouseleave = null;
+          });
         });
-
+    
+        let uploadedFileUrl = "";
+        if (files.length > 0) {
+          // console.log("Widget: Files detected. Starting upload process.");
+          try {
+            const formData = new FormData();
+            for (let i = 0; i < files.length; i++) {
+              formData.append("media", files[i]);
+            }
+            // Ensure chatId is appended if your backend expects it for file uploads
+            formData.append("chatId", state.currentChatId);
+    
+            const uploadResponse = await fetch(`${config.backendUrl}/api/files`, {
+              method: "POST",
+              body: formData,
+            });
+    
+            if (!uploadResponse.ok) {
+              const errorData = await uploadResponse.json();
+              throw new Error(`${errorData.message}  "File upload failed."`);
+            }
+    
+            const uploadResult = await uploadResponse.json();
+            uploadedFileUrl = uploadResult.data.url;
+            // console.log("Widget: Files uploaded successfully. URLs:", uploadedFileUrl);
+    
+            console.log("uploadedFileUrl", uploadedFileUrl);
+          } catch (error) {
+            console.error("Widget: Error uploading files:", error);
+            renderMessage(
+              "bot",
+              `Error uploading file(s): ${error.message},
+                  new Date().toISOString()`
+            );
+            return; // Stop execution if file upload fails
+          }
+        }
+    
         hideTypingIndicator();
-        renderMessage('user', msg, new Date().toISOString());
-        elements.msgInput.value = ''; // Clear input field
+        renderMessage('user', msg, new Date().toISOString(), [], undefined, uploadedFileUrl);
+        elements.msgInput.value = ""; // Clear input field
+        elements.fileInput.value = "";
         elements.fileInputContainer.classList.add("active");
         elements.sendBtn.classList.remove("active");
-
+    
         socket.emit("message", {
-            chatbotCode: config.chatbotCode,
-            chatId: state.currentChatId,
-            email: state.userEmail,
-            message: msg,
-            currentWebsiteURL: window.location.href
+          chatbotCode: config.chatbotCode,
+          chatId: state.currentChatId,
+          email: state.userEmail,
+          message: msg,
+          currentWebsiteURL: window.location.href,
+          fileUrl: uploadedFileUrl,
         });
-
+    
         updateInputAreaVisibility(true); // Keep input visible after sending message
-    };
-
+      };
+    
     /**
      * Handles switching between tabs (Home, Messages, Help).
      * @param {string} tabId - The ID of the tab to switch to ('home', 'messages', 'help').
@@ -1168,11 +1205,11 @@
         });
 
         socket.on("connect", () => {
-            console.log("Chatbot socket connected.");
+            // console.log("Chatbot socket connected.");
         });
 
         socket.on("new_chat_data", (data) => {
-            console.log("Widget received new_chat_data:", data);
+            // console.log("Widget received new_chat_data:", data);
             state.currentChatId = data.chat._id;
             localStorage.setItem('currentChatId', state.currentChatId);
             socket.emit("join_chat", { chatId: state.currentChatId });
@@ -1180,28 +1217,29 @@
 
         socket.on("reply", (data) => {
             hideTypingIndicator();
-            console.log("Widget received 'reply' event:", data);
-            renderMessage(data.sender, data.text, data.timestamp || new Date().toISOString(), data.options);
+            // console.log("Widget received 'reply' event:", data);
+            renderMessage(data.sender, data.text, data.timestamp || new Date().toISOString(), data.options, data.fileUrl);
         });
 
         socket.on("bot_typing_start", () => {
-            console.log("Widget received bot_typing_start");
+            // console.log("Widget received bot_typing_start");
             showTypingIndicator();
         });
 
         socket.on("bot_typing_stop", () => {
-            console.log("Widget received bot_typing_stop");
+            // console.log("Widget received bot_typing_stop");
             hideTypingIndicator();
         });
 
         socket.on("chat_update", (data) => {
-            console.log("Widget received 'chat_update' event:", data);
+            // console.log("Widget received 'chat_update' event:", data);
             if (data.chatId === state.currentChatId) {
                 if (data.message && data.sender === "bot") {
-                    renderMessage(data.sender, data.message, new Date().toISOString(), data.options);
+                    renderMessage(data.sender, data.message, new Date().toISOString(), data.options, data.fileUrl);
                 }
                 if (data.status === 'closed') {
                     updateInputAreaVisibility(false);
+
                     if (t && !data.message) { // Only add 'closed' message if no other message is provided
                         renderMessage('bot', t['This conversation has been closed.'], new Date().toISOString());
                     }
@@ -1212,11 +1250,14 @@
                         const optionButtons = lastMessageElement.querySelectorAll('.option-button');
                         if (optionButtons.length > 0 && Array.from(optionButtons).some(btn => !btn.disabled)) {
                             updateInputAreaVisibility(false); // If options are present and not replied to, keep input hidden
+        
                         } else {
                             updateInputAreaVisibility(true); // Otherwise, show input
+        
                         }
                     } else {
-                        updateInputAreaVisibility(true); // If no messages, show input
+                        updateInputAreaVisibility(true); // If no messages, show input\
+    
                     }
                 }
             }
@@ -1275,7 +1316,9 @@
         elements.articleScrollableContainer = document.querySelector('.article-scrollable-container');
         elements.searchArticleInput = document.getElementById('search-article');
         elements.tabsFooter = document.getElementById('tabs-footer');
-
+        elements.fileInput = document.getElementById("file-input");
+        elements.fileCount = document.getElementById("file-count");
+        elements.removeFile = document.getElementById("remove-file")
         tabsList.forEach(tab => {
           const tabButton = document.createElement('button');
           tabButton.id = tab.id;
@@ -1362,7 +1405,7 @@
                 const textSpan = document.createElement('span');
                 textSpan.textContent = action.text;
                 
-                console.log(action)
+                // console.log(action)
                 actionButton.appendChild(textSpan);
                 actionButton.insertAdjacentHTML('beforeend', action.icon);
 
@@ -1442,7 +1485,7 @@
 
         // Attach event listeners
         elements.chatButton.addEventListener('click', handleToggleWidget);
-        console.log('Event listener attached to chatButton.');
+        // console.log('Event listener attached to chatButton.');
 
         elements.searchArticleInput.placeholder = t["Search for help"]
         // Ensure closeBtns is a NodeList and iterate it
@@ -1496,6 +1539,21 @@
                 }
             });
         }
+
+        if(elements.fileInput && elements.removeFile) {
+            elements.fileInput.addEventListener("input", () => {
+                if(elements.fileInput.files.length > 0) {
+                    elements.fileCount.style.display = "block"
+                } else {
+                    elements.fileCount.style.display = "none"
+                }
+            });
+
+            elements.removeFile.addEventListener('click', () => {
+                elements.fileInput.value = '';
+                elements.fileInput.dispatchEvent(new Event('input'))
+            })
+        }
         if (elements.sendBtn && elements.msgInput) {
             elements.sendBtn.addEventListener("click", handleSendMessage);
             elements.msgInput.addEventListener('keypress', (e) => {
@@ -1540,6 +1598,7 @@
             showView('email');
         }
         updateInputAreaVisibility(state.isInputVisible); // Ensure input visibility is correct on load
+        // console.log(`updateInputAreaVisibility(${state.isInputVisible})`)
 
         // Initialize Socket.IO connection and listeners
         setupSocketListeners();
@@ -1549,7 +1608,7 @@
     let domReady = false;
     document.addEventListener('DOMContentLoaded', () => {
         domReady = true;
-        console.log('--- DOMContentLoaded fired. ---');
+        // console.log('--- DOMContentLoaded fired. ---');
         window.parent.postMessage({ type: 'initialized' }, '*');
         attemptInitialization();
     });
@@ -1559,7 +1618,7 @@
     function attemptInitialization() {
         // console.log('Waiting for DOM or config... DOM Ready:', domReady, 'Config Loaded:', config !== null); // Uncomment for more detailed waiting logs
         if (domReady && config !== null) {
-            console.log('--- Both DOM ready and config loaded. Proceeding with initialization. ---');
+            // console.log('--- Both DOM ready and config loaded. Proceeding with initialization. ---');
             initializeChatbot();
         }
     }

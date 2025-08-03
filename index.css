@@ -47,6 +47,7 @@
 }
 
 [data-theme="dark"] #file-input-label,
+[data-theme="dark"] #file-count,
 [data-theme="dark"] #article-content-container,
 [data-theme="dark"] #branding { 
     -webkit-text-fill-color: var(--text-color-secondary); /* Fill with secondary text color */
@@ -1409,6 +1410,19 @@
     background-color: #f1f5f9;
   }
   
+  #file-count {
+    color: var(--text-color-secondary);
+    font-size: small;
+    margin-bottom: 0.5rem;
+    margin-left: 0.5rem;
+    display:none;
+  }
+
+  #file-count > span {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
   #input-status-message {
     text-align: center;
     color: var(--text-color-secondary);
