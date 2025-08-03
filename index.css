@@ -521,16 +521,6 @@
     text-align: center;
     margin-top: 3rem;
     color: var(--text-color-primary);
-    text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
-    position: relative;
-    z-index: 2;
-  }
-  
-  #home-content > h2 {
-    font-size: xx-large;
-    text-align: center;
-    color: var(--text-color-primary);
-    text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
     position: relative;
     z-index: 2;
   }

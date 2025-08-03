@@ -18,7 +18,8 @@
                     console.log('Dark theme applied.');
                 }
 
-                window.removeEventListener('message', handler); // Clean up listener
+                console.log(config.gradient1)
+                // window.removeEventListener('message', handler); // Clean up listener
                 resolve(); // Signal that config is loaded
             }
         });
@@ -1212,6 +1213,10 @@
         elements.homeHelpSection = document.getElementById('home-help-section');
         elements.branding = document.getElementById('branding');
 
+        if(config.autoOpen) {
+            handleToggleWidget()
+        }
+
         if(config.branding) {
             elements.branding.insertAdjacentHTML('afterbegin', `<span>${t["Powered by"]}${" "}</span>`)
         } else {
@@ -1224,7 +1229,22 @@
         }
 
         if(config.heading) {
-            elements.heading.innerHTML = config.heading
+            elements.heading.innerHTML = config.heading.text;
+
+            if(config.heading.color) {
+                elements.heading.style.color = config.heading.color;
+            }
+
+            if(config.heading.fontSize) {
+                elements.heading.style.fontSize = config.heading.fontSize;
+            }
+
+            if(config.heading.shadow) {
+                elements.heading.style.textShadow = `0 2px 4px ${config.heading.shadowColor}`
+            } else {
+                elements.heading.style.textShadow = "none";
+
+            }
         }
 
         if(config.staffInitials) {
@@ -1250,6 +1270,7 @@
                 const textSpan = document.createElement('span');
                 textSpan.textContent = action.text;
                 
+                console.log(action)
                 actionButton.appendChild(textSpan);
                 actionButton.insertAdjacentHTML('beforeend', action.icon);
 
@@ -1277,6 +1298,8 @@
 
                 elements.homeHelpSection.appendChild(helpButton);
             })
+        } else {
+            elements.homeHelpSection.style.display = "none"
         }
 
         if(config.bgImageUrl) {
