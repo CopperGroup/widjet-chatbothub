@@ -1518,7 +1518,7 @@
     if (config.autoOpen) {
       handleToggleWidget();
     }
-
+ 
     if (config.branding) {
       elements.branding.insertAdjacentHTML(
         "afterbegin",
