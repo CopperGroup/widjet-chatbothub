@@ -1275,6 +1275,7 @@
         renderMessage('user', msg, new Date().toISOString(), [], undefined, uploadedFileUrl);
         elements.msgInput.value = ""; // Clear input field
         elements.fileInput.value = "";
+        
         elements.fileInputContainer.classList.add("active");
         elements.sendBtn.classList.remove("active");
     
