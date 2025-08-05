@@ -214,6 +214,7 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
+[data-theme="dark"] .message-bubble.owner .message-content,
 [data-theme="dark"] .message-bubble.bot .message-content,
 [data-theme="dark"] .message-bubble.ai .message-content,
 [data-theme="dark"] .message-bubble.staff .message-content {
@@ -1168,6 +1169,7 @@
   }
   
   /* Bot/AI/Staff Message Specific Styles */
+  .message-bubble.owner .message-content,
   .message-bubble.bot .message-content,
   .message-bubble.ai .message-content,
   .message-bubble.staff .message-content {

@@ -5,7 +5,7 @@
   // --- Step 1: Handle Configuration Loading ---
   // This promise will resolve when the config is received from the parent
   const configLoadedPromise = new Promise((resolve) => {
-    window.addEventListener("message", function handler(event) {
+    window.addEventListener("message", async function handler(event) {
       // In a production environment, validate event.origin for security!
       // For example: if (event.origin !== 'https://your-parent-domain.com') return;
 
@@ -18,7 +18,60 @@
           console.log("Dark theme applied.");
         }
 
-        console.log(config.gradient1);
+        if(config.dynamiclyAdaptToLanguage) {
+            const languageCode = navigator.language.split('-')[0];
+    
+            let availableLanguages = [];
+            
+            try {
+                const res = await fetch(`${config.backendUrl}/api/getPossibleLanguages`)
+    
+                if(!res.ok) {
+                    const errorData = await res.json();
+                    console.error(errorData.message || 'Failed to fetch available languages');
+                }
+    
+                const data = await res.json();
+    
+                availableLanguages = data;
+            } catch (error) {
+                console.error(`Failed to fetch available languages ${error.message}`)
+            }
+    
+            if(availableLanguages.includes(languageCode) && config.language !== languageCode) {
+                try{
+                    const res = await fetch(`${config.backendUrl}/api/getInterfaceLanguage/${languageCode}`)
+        
+                    if(!res.ok) {
+                        const errorData = await res.json();
+                        console.error(errorData.message || 'Failed to fetch translation');
+                    }
+        
+                    const data = await res.json();
+        
+                    t = data;
+    
+                }   catch (error) {
+                    console.error(`Failed to fetch translation ${error.message}`)
+                }
+            } else if (languageCode !== "en") {
+                try{
+                    const res = await fetch(`${config.backendUrl}/api/getInterfaceLanguage/en`)
+        
+                    if(!res.ok) {
+                        const errorData = await res.json();
+                        console.error(errorData.message || 'Failed to fetch translation');
+                    }
+        
+                    const data = await res.json();
+        
+                    t = data;
+    
+                }   catch (error) {
+                    console.error(`Failed to fetch translation ${error.message}`)
+                }
+            }
+        }
         // window.removeEventListener('message', handler); // Clean up listener
         resolve(); // Signal that config is loaded
       }
@@ -128,7 +181,11 @@
         } else if (tab === "messages" && view === "chat") {
           if (elementId === "null" || elementId === null) {
             // Check if elementId is explicitly null or the string 'null'
-            handleNewChat(); // Call handleNewChat if view is 'chat' and elementId is null
+            if (state.userEmail) {
+                handleNewChat();
+              } else {
+                showView("email", "left");
+              }
           } else {
             handleShowChatMessages(elementId); // Otherwise, open the specific chat
           }
