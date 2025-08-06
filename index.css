@@ -731,10 +731,6 @@
     overflow: hidden;
   }
 
-  .help-content > p {
-    min-height: 10px;
-  }
-
 
   /* Help Tab */
   .help-header {
@@ -775,6 +771,11 @@
     padding: 1rem;
     min-height: 0;
   }
+
+  #article-content-container > p:empty {
+    min-height: 40px;
+  }
+  
 
   .article-scrollable-container {
     flex: 1;

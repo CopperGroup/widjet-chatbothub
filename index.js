@@ -1707,6 +1707,10 @@
       return; // Stop initialization if critical elements are missing
     }
 
+    if(!config.allowFileSharing) {
+        elements.fileInputContainer.style.display = "none"
+    }
+
     const response = await fetch(
       `${config.backendUrl}/api/websites/faqs/${config.chatbotCode}`
     );
