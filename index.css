@@ -731,6 +731,11 @@
     overflow: hidden;
   }
 
+  .help-content > p {
+    min-height: 10px;
+  }
+
+
   /* Help Tab */
   .help-header {
     background: linear-gradient(135deg, var(--gradient-color-1) 0%, var(--gradient-color-2) 100%);
